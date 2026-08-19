@@ -1,0 +1,10 @@
+/* Shared responsive layer.
+   Loaded after page stylesheets so shared breakpoint overrides take
+   effect. Only rules that apply across pages live here; each page
+   stylesheet keeps its own layout-specific breakpoints. */
+
+/* Shared centered cards (login / signup / errors) */
+@media (max-width: 460px) {
+  .card,
+  .error-card { padding: var(--card-pad-y) var(--space-6); }
+}

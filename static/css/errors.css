@@ -1,0 +1,43 @@
+/* Error pages — same design tokens and shape as the rest of the app.
+   Dark mode is inherited automatically from base.css. */
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-6);
+  background: var(--bg);
+}
+
+.error-card {
+  width: min(var(--card-w), 100%);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--card-pad-y) var(--card-pad-x);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.error-code {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.error-card h1 {
+  margin: var(--space-3) 0 var(--space-2);
+  font-size: var(--fs-3xl);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.error-card p {
+  margin: 0 0 var(--space-7);
+  font-size: var(--fs-md);
+  line-height: 1.5;
+  color: var(--muted);
+}

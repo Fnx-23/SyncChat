@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script>
+  // Apply the theme before first paint to avoid a flash.
+  // Priority: server-provided DB preference (logged-in users) > localStorage
+  // (anonymous / before-login) > OS preference. "system" resolves to light/dark
+  // here and immediately; the chosen preference is stashed on the root element
+  // so theme.js can re-resolve when the OS preference changes.
+  (function () {
+    var pref = "{{ theme_pref|default:'' }}";         // 'light'|'dark'|'system'|'' (server)
+    var resolved = "{{ theme_resolved|default:'' }}"; // 'light'|'dark' (server, for 'system')
+    var stored = null;
+    try { stored = localStorage.getItem("syncchat:theme"); } catch (e) {}
+    if (["light", "dark", "system"].indexOf(stored) === -1) stored = null;
+
+    var choice = pref || stored || "system";
+    var apply;
+    if (choice === "system") {
+      apply = resolved && resolved !== ""
+        ? resolved
+        : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    } else {
+      apply = choice;
+    }
+
+    document.documentElement.dataset.theme = apply;
+    document.documentElement.dataset.themePref = choice;
+  })();
+</script>
+<title>{% block title %}SyncChat{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'css/base.css' %}" />
+<link rel="stylesheet" href="{% static 'css/toast.css' %}" />
+{% block extra_css %}{% endblock %}
+<link rel="stylesheet" href="{% static 'css/responsive.css' %}" />
+</head>
+<body>
+<!-- Toast notification container -->
+<div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
+
+<!-- Server-side messages data -->
+{% if django_messages %}
+{{ django_messages|json_script:"django-messages" }}
+{% endif %}
+{% block content %}{% endblock %}
+<script src="{% static 'js/common.js' %}"></script>
+<script src="{% static 'js/toast.js' %}"></script>
+<script src="{% static 'js/theme.js' %}"></script>
+{% if user.is_authenticated %}
+<!-- Application-wide presence: keeps the user Online across pages. -->
+<script src="{% static 'js/presence.js' %}"></script>
+{% endif %}
+{% block extra_js %}{% endblock %}
+</body>
+</html>

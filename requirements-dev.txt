@@ -1,0 +1,7 @@
+-r requirements.txt
+ruff==0.16.1
+pre-commit==4.6.1
+
+# Optional production deps (see README):
+# channels-redis          # Redis-backed channel layer
+# django-redis            # Redis-backed cache for rate limiting

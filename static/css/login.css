@@ -1,0 +1,12 @@
+/* Login-specific overrides (applied after auth.css) */
+
+.field:nth-of-type(2) { animation-delay: 0.32s; }
+
+.btn:disabled { cursor: default; opacity: 1; }
+
+.btn .done-mark { display: none; }
+
+@media (max-height: 700px) and (orientation: landscape) {
+  body { align-items: flex-start; }
+  .card { margin: 8px 0; }
+}

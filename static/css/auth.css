@@ -1,0 +1,290 @@
+/* Shared auth styles (login & signup).
+   Design tokens and shared component styles come from base.css; this file
+   keeps only the centered-card layout and auth-specific flourishes. */
+
+html, body { height: 100%; }
+
+body {
+  font-family: "Instrument Sans", system-ui, sans-serif;
+  color: var(--ink);
+  background-color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* --- Atmospheric background (kept quiet: light gray reads through) --- */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(640px 420px at 18% -10%, rgba(0, 102, 255, 0.07), transparent 62%),
+    radial-gradient(560px 400px at 88% 110%, rgba(0, 102, 255, 0.06), transparent 60%),
+    radial-gradient(1px 1px at 20px 20px, rgba(26, 26, 26, 0.045) 1px, transparent 0),
+    radial-gradient(1px 1px at 80px 90px, rgba(26, 26, 26, 0.045) 1px, transparent 0);
+  background-size: auto, auto, 160px 160px, 160px 160px;
+  pointer-events: none;
+}
+
+/* --- Film grain overlay --- */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("../images/noise.svg");
+  opacity: 0.028;
+  pointer-events: none;
+}
+
+/* --- Card --- */
+.card {
+  position: relative;
+  width: min(var(--card-w), 100%);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--card-pad-y) var(--card-pad-x);
+  box-shadow: var(--shadow-lg);
+  animation: cardIn 0.7s var(--ease) both;
+}
+
+/* --- Eyebrow --- */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  animation: rise 0.6s var(--ease) 0.08s both;
+}
+.eyebrow .rule { height: 1px; width: 34px; background: var(--border); }
+.eyebrow .wordmark {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.eyebrow .wordmark i {
+  font-style: normal;
+  color: var(--accent);
+}
+
+/* --- Title & subtitle --- */
+.title {
+  font-size: var(--fs-3xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-align: center;
+  animation: rise 0.6s var(--ease) 0.14s both;
+}
+.subtitle {
+  margin: var(--space-2) 0 var(--space-7);
+  font-size: var(--fs-md);
+  color: var(--muted);
+  text-align: center;
+  animation: rise 0.6s var(--ease) 0.2s both;
+}
+
+/* --- Form --- */
+form { display: flex; flex-direction: column; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--space-5);
+  animation: rise 0.6s var(--ease) 0.26s both;
+}
+
+.field label {
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--label);
+  margin-bottom: var(--space-2);
+}
+
+.input-wrap { position: relative; display: block; }
+
+.input-wrap input {
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+  font: inherit;
+  font-size: var(--fs-base);
+  color: var(--ink);
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.input-wrap input::placeholder { color: var(--muted); }
+
+.input-wrap input:hover { border-color: var(--border-hover); }
+
+.input-wrap input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  background: var(--input-bg);
+}
+
+.input-wrap input.error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.12);
+}
+
+/* Password visibility toggle (revealed on hover/focus, like Discord) */
+.toggle-pw {
+  position: absolute;
+  top: 50%;
+  right: var(--space-2);
+  transform: translateY(-50%);
+  width: var(--control-sm);
+  height: var(--control-sm);
+  display: grid;
+  place-items: center;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  color: var(--faint);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.input-wrap:hover .toggle-pw,
+.input-wrap:focus-within .toggle-pw,
+.toggle-pw.visible { opacity: 1; }
+.toggle-pw:hover { color: var(--ink); background: var(--hover); }
+.toggle-pw svg { width: 19px; height: 19px; }
+.toggle-pw .eye-off { display: none; }
+.toggle-pw[aria-pressed="true"] .eye-on { display: none; }
+.toggle-pw[aria-pressed="true"] .eye-off { display: block; }
+
+/* --- Error message --- */
+.form-error {
+  display: none;
+  font-size: var(--fs-sm);
+  color: var(--error);
+  margin: -4px 0 var(--space-4);
+  animation: rise 0.3s ease both;
+}
+.form-error.show { display: block; }
+
+/* --- Button --- */
+.btn {
+  width: 100%;
+  font: inherit;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 1px 2px rgba(0, 82, 204, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s var(--ease);
+  animation: rise 0.6s var(--ease) 0.44s both;
+  position: relative;
+  overflow: hidden;
+}
+.btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 14px rgba(0, 82, 204, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.btn:active:not(:disabled) { transform: translateY(1px) scale(0.995); }
+.btn:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--accent-soft), inset 0 1px 0 rgba(255, 255, 255, 0.18); }
+.btn:disabled { cursor: default; }
+
+/* Sheen sweep on hover */
+.btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.55s ease;
+}
+.btn:hover:not(:disabled)::after { left: 130%; }
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* --- Footer --- */
+.footer {
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--divider);
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  animation: rise 0.6s var(--ease) 0.5s both;
+}
+.footer a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 2px;
+  transition: color 0.2s ease;
+}
+.footer a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1.5px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s var(--ease);
+}
+.footer a:hover { color: var(--accent-hover); }
+.footer a:hover::after { transform: scaleX(1); }
+.footer a:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-soft); border-radius: 4px; }
+
+/* --- Animations --- */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+.shake { animation: shake 0.45s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

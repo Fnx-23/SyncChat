@@ -1,0 +1,377 @@
+/* Global foundation for every page.
+   Single source of truth for design tokens (colors, radii, shadows) and the
+   shared component styles used across SyncChat (buttons, inputs, avatars,
+   toggles). Page stylesheets only add page-specific rules and sizes, so every
+   page renders with the same palette, shape, and typography scale. */
+
+:root {
+  /* Surfaces & text */
+  --bg: #f0f2f5;
+  --panel: #ffffff;
+  --card: #ffffff;
+  --ink: #1a1a1a;
+  --label: #374151;
+  --name: #374151;
+  --muted: #6b7280;
+  --faint: #9aa0aa;
+
+  /* Lines & fills */
+  --border: #e5e7eb;
+  --border-hover: #d5d9e0;
+  --divider: #f0f1f3;
+  --hover: #f9fafb;
+  --field-bg: #f9fafb;
+  --input-bg: #ffffff;
+
+  /* Accent */
+  --accent: #0066ff;
+  --accent-hover: #0052cc;
+  --accent-soft: rgba(0, 102, 255, 0.10);
+  --accent-ring: rgba(0, 102, 255, 0.14);
+
+  /* Status */
+  --success: #16a34a;
+  --error: #dc2626;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+
+  /* Shape & motion */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-field: 8px;
+  --radius-panel: 12px;
+  --radius-card: 12px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Elevation */
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 12px rgba(16, 24, 40, 0.05);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Layout scale ----------
+   Single source of truth for geometry, spacing, type, controls and avatars.
+   The Settings page is the reference: these values drive it, and every other
+   page sizes itself from the same tokens so nothing ever falls out of step.
+   Theme-independent, so only defined once on :root. */
+:root {
+  /* Page geometry */
+  --layout-max: 1024px;   /* widest content column (Settings main) */
+  --sidebar-w: 300px;     /* Settings nav + chat conversation column */
+  --convo-min: 320px;     /* chat conversation list never narrower */
+  --panel-pad: 16px;      /* outer padding of floating-panel shells */
+  --panel-gap: 12px;      /* gutter between panels in a shell */
+  --details-w: 400px;     /* chat profile/details panel */
+
+  /* Content column padding (Settings main is the reference) */
+  --content-pad-top: 48px;
+  --content-pad-x: 56px;
+  --content-pad-bottom: 64px;
+  --content-pad-gutter: 40px;
+
+  /* Spacing rhythm */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 40px;
+  --space-10: 48px;
+  --space-11: 56px;
+  --space-12: 64px;
+
+  /* Type scale */
+  --fs-xs: 13px;   /* labels, badges, metadata */
+  --fs-sm: 14px;   /* secondary text, handles */
+  --fs-md: 15px;   /* body text, previews */
+  --fs-base: 16px; /* controls, list names */
+  --fs-lg: 18px;   /* panel names, emphasis */
+  --fs-xl: 22px;   /* panel titles */
+  --fs-2xl: 28px;
+  --fs-3xl: 32px;  /* page titles (Settings title, auth title) */
+  --fs-4xl: 36px;  /* section headings (Settings h2) */
+
+  /* Controls */
+  --control-sm: 40px;   /* icon buttons, password toggles */
+  --control-md: 44px;   /* compact inputs (message search) */
+  --control-lg: 54px;   /* primary inputs & composer */
+
+  /* Avatars */
+  --avatar-xs: 36px;
+  --avatar-sm: 48px;
+  --avatar-md: 56px;
+  --avatar-lg: 72px;
+  --avatar-xl: 96px;
+  --avatar-2xl: 152px;
+
+  /* Centered cards (login / signup / errors) */
+  --card-w: 480px;
+  --card-pad-y: 48px;
+  --card-pad-x: 40px;
+
+  /* Text aliases used by templates */
+  --text-secondary: var(--muted);
+}
+
+/* Dark theme: html[data-theme] is set early by an inline script in base.html
+   so the correct palette paints before first render. */
+html[data-theme="dark"] {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --card: #171a21;
+  --ink: #e6e8eb;
+  --label: #d1d5db;
+  --name: #d1d5db;
+  --muted: #9ca3af;
+  --faint: #6b7380;
+
+  --border: #2a2f3a;
+  --border-hover: #333b4a;
+  --divider: #22262e;
+  --hover: #1c2028;
+  --field-bg: #151922;
+  --input-bg: #1c2028;
+
+  --accent: #4c8dff;
+  --accent-hover: #6ba1ff;
+  --accent-soft: rgba(76, 141, 255, 0.15);
+  --accent-ring: rgba(76, 141, 255, 0.22);
+
+  --success: #4ade80;
+  --error: #ff6b6b;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { height: 100%; }
+
+body {
+  font-family: "Instrument Sans", system-ui, sans-serif;
+  color: var(--ink);
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Smooth theme transitions.
+   Disabled by default; theme.js adds .theme-transition only during an
+   explicit switch so the initial paint and unrelated DOM mutations keep
+   their default (instant) behavior. Honors prefers-reduced-motion above. */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition:
+    background-color 0.28s var(--ease),
+    border-color 0.28s var(--ease),
+    color 0.28s var(--ease),
+    box-shadow 0.28s var(--ease),
+    fill 0.28s var(--ease),
+    stroke 0.28s var(--ease) !important;
+}
+
+/* Django messages framework */
+.messages {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(92vw, 420px);
+}
+
+.message {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-field);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.message-success { border-color: #2e7d32; color: #2e7d32; }
+.message-error { border-color: var(--error); color: var(--error); }
+
+/* ============================================================
+   Shared components (identical across every page)
+   ============================================================ */
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: var(--space-4) var(--space-7);
+  font: inherit;
+  font-size: var(--fs-base);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+    box-shadow 0.2s ease, transform 0.15s var(--ease);
+  outline: none;
+}
+.btn:hover:not(:disabled) { background: var(--hover); border-color: var(--border-hover); }
+.btn:active:not(:disabled) { transform: scale(0.98); }
+.btn:focus-visible { box-shadow: 0 0 0 3px var(--accent-ring); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+.btn-secondary { background: var(--field-bg); border-color: var(--border); color: var(--ink); }
+.btn-secondary:hover:not(:disabled) { background: var(--hover); border-color: var(--border-hover); }
+
+.btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn-danger:hover:not(:disabled) { background: var(--danger-hover); border-color: var(--danger-hover); }
+
+/* ---------- Icon buttons ---------- */
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: var(--control-sm);
+  height: var(--control-sm);
+  border: none;
+  background: none;
+  border-radius: var(--radius-field);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.icon-btn svg { width: 20px; height: 20px; }
+.icon-btn:hover { background: var(--hover); color: var(--ink); }
+.icon-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-ring); }
+
+/* ---------- Avatars ---------- */
+.avatar {
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* ---------- Form fields ---------- */
+.form-group { margin-bottom: var(--space-7); }
+
+.form-group label {
+  display: block;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--label);
+  margin-bottom: 10px;
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+  font: inherit;
+  font-size: var(--fs-base);
+  color: var(--ink);
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-input::placeholder { color: var(--muted); }
+.form-input:hover { border-color: var(--border-hover); }
+.form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); }
+.form-input.error { border-color: var(--error); }
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 144px;
+}
+
+.form-select {
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+  font: inherit;
+  font-size: var(--fs-base);
+  color: var(--ink);
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-select:hover { border-color: var(--border-hover); }
+.form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); }
+
+.field-error {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--error);
+}
+
+/* ---------- Toggle switch ---------- */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 56px;
+  height: 32px;
+  flex-shrink: 0;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  height: 24px;
+  width: 24px;
+  left: 4px;
+  bottom: 4px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(24px); }
+.toggle-switch input:focus-visible + .toggle-slider { box-shadow: 0 0 0 3px var(--accent-ring); }

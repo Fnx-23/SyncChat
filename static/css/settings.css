@@ -1,0 +1,697 @@
+/* ---------- Settings ----------
+   Layout reference for the rest of the app: all geometry, spacing and type
+   come from the shared tokens in base.css. This file only shapes the
+   settings shell and its section components. */
+
+/* ---------- Container ---------- */
+.settings-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------- Sidebar ---------- */
+.settings-sidebar {
+  width: var(--sidebar-w);
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  padding: var(--space-9) 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.settings-header {
+  padding: 0 var(--space-7) var(--space-9);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: var(--fs-md);
+  font-weight: 500;
+  margin-bottom: var(--space-6);
+  transition: color 0.15s ease;
+}
+.back-link svg {
+  width: 20px;
+  height: 20px;
+}
+.back-link:hover {
+  color: var(--accent);
+}
+
+.settings-title {
+  font-size: var(--fs-3xl);
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-4) var(--space-7);
+  border: none;
+  background: none;
+  text-align: left;
+  color: var(--label);
+  font: inherit;
+  font-size: var(--fs-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  border-left: 3px solid transparent;
+}
+.nav-item svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+.nav-item:hover {
+  background: var(--hover);
+  color: var(--accent);
+}
+.nav-item:hover svg {
+  color: var(--accent);
+}
+.nav-item.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
+.nav-item.active svg {
+  color: var(--accent);
+}
+
+/* Nav grouping: the sidebar is split into a "Profile Information" group and
+   an "Account Settings" group, separated by a divider. Purely presentational
+   — each item still switches its own section. Hidden on the mobile tab bar. */
+.nav-group-label {
+  padding: var(--space-4) var(--space-7) 6px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.nav-divider {
+  height: 1px;
+  background: var(--border);
+  margin: var(--space-4) var(--space-7);
+}
+
+/* ---------- Main Content ----------
+   Starts flush against the sidebar; max-width only caps ultra-wide screens
+   so long forms stay readable (never centered away from the nav). */
+.settings-main {
+  flex: 1;
+  padding: var(--content-pad-top) var(--content-pad-x) var(--content-pad-bottom) var(--content-pad-gutter);
+  max-width: var(--layout-max);
+  position: relative;
+}
+
+/* Auto-save indicator */
+.auto-save-indicator {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  z-index: 100;
+  animation: slide-in 0.2s ease;
+}
+.auto-save-indicator[hidden] {
+  display: none;
+}
+.auto-save-indicator .spinner {
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+.auto-save-indicator.success {
+  color: var(--success);
+}
+.auto-save-indicator.error {
+  color: var(--error);
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Settings Section ---------- */
+.settings-section {
+  display: none;
+  animation: fade-in 0.2s ease;
+}
+.settings-section.active {
+  display: block;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-header {
+  margin-bottom: var(--space-10);
+}
+.section-header h2 {
+  font-size: var(--fs-4xl);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: var(--space-3);
+  letter-spacing: -0.02em;
+}
+.section-header p {
+  font-size: var(--fs-base);
+  color: var(--muted);
+}
+
+/* ---------- Forms ---------- */
+.form-actions {
+  margin-top: var(--space-9);
+}
+
+/* Input with icon (password fields) */
+.input-wrap {
+  position: relative;
+  display: block;
+}
+
+.input-wrap .form-input {
+  padding-right: var(--space-10);
+}
+
+.input-wrap .toggle-pw {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--control-sm);
+  height: var(--control-sm);
+  border: none;
+  background: none;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s ease, color 0.15s ease;
+  opacity: 0.7;
+}
+.input-wrap .toggle-pw svg {
+  width: 20px;
+  height: 20px;
+}
+.input-wrap:hover .toggle-pw,
+.input-wrap:focus-within .toggle-pw,
+.input-wrap .toggle-pw[aria-pressed="true"] {
+  opacity: 1;
+}
+.input-wrap .toggle-pw:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+.input-wrap .toggle-pw .eye-off {
+  display: none;
+}
+.input-wrap .toggle-pw[aria-pressed="true"] .eye-on {
+  display: none;
+}
+.input-wrap .toggle-pw[aria-pressed="true"] .eye-off {
+  display: block;
+}
+
+/* ---------- Avatar Section ---------- */
+.avatar-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-9);
+}
+
+.avatar-large {
+  position: relative;
+  width: var(--avatar-2xl);
+  height: var(--avatar-2xl);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 4px solid var(--panel);
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.avatar-large:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 40px rgba(0, 102, 255, 0.2);
+}
+.avatar-large .initials {
+  font-size: 52px;
+  font-weight: 700;
+  color: #fff;
+  user-select: none;
+}
+.avatar-large img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+.avatar-large.has-photo img {
+  display: block;
+}
+.avatar-large.has-photo .initials {
+  display: none;
+}
+.avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.avatar-large:hover .avatar-overlay {
+  opacity: 1;
+}
+
+/* ---------- Setting Items ---------- */
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-7) 0;
+  border-bottom: 1px solid var(--divider);
+}
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-info h3 {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.setting-info p {
+  font-size: var(--fs-md);
+  color: var(--muted);
+}
+
+/* Theme Options */
+.theme-options {
+  display: flex;
+  gap: var(--space-4);
+}
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: var(--space-5) var(--space-6);
+  border: 2px solid var(--border);
+  background: var(--panel);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font: inherit;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--muted);
+}
+.theme-option svg {
+  width: 28px;
+  height: 28px;
+}
+.theme-option:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.theme-option.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ---------- Danger Zone ---------- */
+.danger-zone {
+  background: rgba(220, 38, 38, 0.05);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: var(--radius);
+  padding: var(--space-7) var(--space-8);
+}
+
+.danger-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.danger-info h3 {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--danger);
+  margin-bottom: 6px;
+}
+.danger-info p {
+  font-size: var(--fs-md);
+  color: var(--muted);
+}
+
+/* ---------- Blocked Users ---------- */
+.blocked-user-loading,
+.blocked-user-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-11) var(--space-5);
+  text-align: center;
+}
+
+.blocked-user-loading[hidden],
+.blocked-user-empty[hidden] {
+  display: none;
+}
+
+.blocked-user-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--divider);
+}
+
+.blocked-user-item:last-child {
+  border-bottom: none;
+}
+
+.blocked-user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.blocked-user-avatar {
+  width: var(--avatar-md);
+  height: var(--avatar-md);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.blocked-user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.blocked-user-name {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.blocked-user-handle {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.blocked-user-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.btn-unblock {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font: inherit;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-unblock:hover {
+  background: var(--accent-hover);
+}
+
+.btn-unblock:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1024px) {
+  .settings-main {
+    padding: var(--content-pad-top) var(--content-pad-x) var(--space-10) var(--content-pad-gutter);
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-container {
+    flex-direction: column;
+  }
+
+  .settings-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .settings-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 0;
+    padding: 0 var(--space-4);
+  }
+
+  /* The Profile / Account grouping collapses on the horizontal tab bar. */
+  .nav-group-label,
+  .nav-divider {
+    display: none;
+  }
+
+  .nav-item {
+    flex-direction: column;
+    gap: 6px;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--fs-xs);
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+  }
+  .nav-item.active {
+    border-left: none;
+    border-bottom-color: var(--accent);
+  }
+
+  .settings-main {
+    padding: var(--space-6) var(--space-5) var(--space-9);
+    max-width: none;
+  }
+
+  .section-header h2 {
+    font-size: var(--fs-2xl);
+  }
+
+  .auto-save-indicator {
+    top: 12px;
+    right: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-title {
+    font-size: var(--fs-xl);
+  }
+
+  .theme-options {
+    flex-direction: column;
+    width: 100%;
+  }
+  .theme-option {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  .danger-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  .danger-item .btn {
+    width: 100%;
+  }
+}
+
+/* ---------- Confirmation Modal ----------
+   Mirrors the dashboard modal (dashboard.css) so the Delete Account dialog
+   matches the rest of the app; dashboard.css is not loaded on this page. */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: modal-fade-in 0.2s var(--ease);
+}
+.modal-overlay[hidden] {
+  display: none;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-container {
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  background: var(--panel);
+  border-radius: var(--radius-panel);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modal-scale-in 0.2s var(--ease);
+}
+.modal-container.modal-small {
+  max-width: 420px;
+}
+
+@keyframes modal-scale-in {
+  from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6) var(--space-7);
+  border-bottom: 1px solid var(--divider);
+}
+.modal-title {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--danger);
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6) var(--space-7);
+  min-height: 0;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-7);
+  border-top: 1px solid var(--divider);
+}
+
+.delete-confirm-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: var(--space-4);
+  font-size: var(--fs-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.delete-confirm-check input {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal-container {
+    max-width: 100%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}

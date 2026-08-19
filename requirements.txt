@@ -1,0 +1,6 @@
+Django==6.0.7
+channels==4.3.2
+daphne==4.2.3
+Pillow==12.2.0
+python-dotenv==1.0.1
+django-ratelimit==4.1.0

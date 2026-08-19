@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Page not found — SyncChat{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/errors.css' %}" />
+{% endblock %}
+
+{% block content %}
+<main class="error-card">
+  <div class="error-code">404</div>
+  <h1>Page not found</h1>
+  <p>The page you're looking for doesn't exist or has been moved.</p>
+  <a class="btn btn-primary" href="{% url 'dashboard' %}">Back to Messages</a>
+</main>
+{% endblock %}

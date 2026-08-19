@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Messages — SyncChat{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="app" id="app">
+
+{% include 'components/chat_sidebar.html' %}
+
+  <!-- Middle: chat -->
+  <section class="panel chat" id="chat">
+{% include 'components/navbar.html' %}
+    <div class="chat-body" id="chat-body" role="log" aria-live="polite"></div>
+{% include 'components/message_input.html' %}
+  </section>
+
+{% include 'components/contact_info.html' %}
+
+</div>
+
+{% csrf_token %}
+{{ conversations_data|json_script:"syncchat-data" }}
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/websocket.js' %}"></script>
+  <script src="{% static 'js/dashboard.js' %}"></script>
+  <script src="{% static 'js/logout.js' %}"></script>
+{% endblock %}
