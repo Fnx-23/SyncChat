@@ -172,7 +172,7 @@ Frame construction is centralized in `chat/broadcast.py`, so the HTTP fallback p
 **1. Clone the repository**
 
 ```bash
-git clone https://github.com/<your-username>/SyncChat.git
+git clone https://github.com/Fnx-23/SyncChat.git
 cd SyncChat
 ```
 
