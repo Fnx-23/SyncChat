@@ -15,7 +15,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django_ratelimit.decorators import ratelimit
 
-from core.images import _validate_image
+from core.images import validate_image
 
 from .broadcast import build_message_event, broadcast_new_message_notification
 from .models import MAX_MESSAGE_LENGTH, Block, Conversation, Message, blocks_exist
@@ -27,7 +27,7 @@ MEDIA_GRID_LIMIT = 12
 
 
 def _time_label(dt):
-    """Format a timestamp the way the dashboard UI used to."""
+    """Format a timestamp as a short sidebar/history label (time, weekday, or date)."""
     if dt is None:
         return ""
     now = timezone.localtime()
@@ -171,7 +171,6 @@ def _participant_payload(user, include_email=True, viewer=None, are_contacts=Non
         "handle": f"@{user.username}",
         "username": user.username,
         "online": user.is_online if online_visible else False,
-        "phone": "",
         "bio": user.bio if profile_visible else "",
         "avatar": user.avatar.url if user.avatar else None,
         "last_seen": (
@@ -276,7 +275,6 @@ def _conversation_payload(conversation, me, messages=None, message_limit=None):
             "handle": "",
             "online": False,
             "email": "",
-            "phone": "",
             "bio": "",
             "avatar": None,
             "last_seen": None,
@@ -297,7 +295,6 @@ def _conversation_payload(conversation, me, messages=None, message_limit=None):
                 "avatar": None,
                 "bio": "",
                 "email": "",
-                "phone": "",
                 "last_seen": None,
                 "joined": None,
             }
@@ -334,33 +331,42 @@ def _conversation_payload(conversation, me, messages=None, message_limit=None):
     return payload
 
 
+def _with_conversation_data(queryset, user):
+    """Attach the sidebar's message prefetch and per-conversation annotations.
+
+    Shared by the dashboard and conversation search so both compute identical
+    counts (total / unread / media) and mute state. The caller supplies the
+    base filtering and the final ordering.
+    """
+    return queryset.prefetch_related(
+        "participants",
+        Prefetch(
+            "messages",
+            queryset=_recent_messages_queryset(DASHBOARD_MESSAGE_LIMIT),
+        ),
+    ).annotate(
+        total_count=Count("messages", filter=_visible_messages_filter(user)),
+        unread_count=Count(
+            "messages",
+            filter=Q(messages__is_read=False)
+            & ~Q(messages__sender=user)
+            & Q(messages__blocked_delivery=False),
+        ),
+        media_count=Count(
+            "messages",
+            filter=Q(messages__image__gt="")
+            & _visible_messages_filter(user),
+        ),
+        is_muted=_muted_exists(user),
+    )
+
+
 @login_required
 def dashboard(request):
     conversations = list(
-        Conversation.objects.filter(participants=request.user)
-        .prefetch_related(
-            "participants",
-            Prefetch(
-                "messages",
-                queryset=_recent_messages_queryset(DASHBOARD_MESSAGE_LIMIT),
-            ),
-        )
-        .annotate(
-            total_count=Count("messages", filter=_visible_messages_filter(request.user)),
-            unread_count=Count(
-                "messages",
-                filter=Q(messages__is_read=False)
-                & ~Q(messages__sender=request.user)
-                & Q(messages__blocked_delivery=False),
-            ),
-            media_count=Count(
-                "messages",
-                filter=Q(messages__image__gt="")
-                & _visible_messages_filter(request.user),
-            ),
-            is_muted=_muted_exists(request.user),
-        )
-        .order_by("-updated_at")
+        _with_conversation_data(
+            Conversation.objects.filter(participants=request.user), request.user
+        ).order_by("-updated_at")
     )
     # Only hide conversations that are soft-deleted, NOT blocked ones
     deleted_ids = _deleted_conversation_ids(request.user)
@@ -483,7 +489,6 @@ class BlockStatusView(LoginRequiredMixin, View):
             return JsonResponse({"blockedByMe": False, "blockedMe": False})
 
         blocked_by_me = Block.objects.filter(blocker=request.user, blocked=other).exists()
-        blocked_me = Block.objects.filter(blocker=other, blocked=request.user).exists()
 
         # Never reveal that the other user has blocked the requester.
         return JsonResponse({
@@ -501,7 +506,7 @@ class BlockedUsersView(LoginRequiredMixin, View):
             {
                 **_participant_payload(block.blocked, include_email=False),
                 "id": block.blocked.id,
-                "blockedAt": block.created_at.isoformat() if hasattr(block, "created_at") else None
+                "blockedAt": block.created_at.isoformat(),
             }
             for block in blocks
         ]
@@ -604,7 +609,7 @@ class SendMessageView(LoginRequiredMixin, View):
                 status=400,
             )
         if image:
-            error = _validate_image(image)
+            error = validate_image(image)
             if error:
                 return JsonResponse({"error": error}, status=400)
 
@@ -614,11 +619,7 @@ class SendMessageView(LoginRequiredMixin, View):
             content=content,
             image=image,
         )
-        # A new message brings a soft-deleted conversation back for everyone.
-        conversation.deleted_by.clear()
-        Conversation.objects.filter(pk=conversation.pk).update(
-            updated_at=message.created_at
-        )
+        conversation.register_new_message(message)
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"conversation_{pk}", build_message_event(message)
@@ -634,35 +635,29 @@ class SearchUsersView(LoginRequiredMixin, View):
             return JsonResponse({"error": "Too many searches. Try again in a minute."}, status=429)
 
         if request.GET.get("suggested") == "1":
-            active_convos = Conversation.objects.filter(
-                participants=request.user,
-            ).exclude(
-                deleted_by=request.user,
-            )
-            existing_partner_ids = set(
-                active_convos.values_list("participants__id", flat=True).exclude(
-                    id=request.user.id,
-                )
+            # Everyone the user has no active (non-deleted) conversation with.
+            active_partner_ids = set(
+                Conversation.objects.filter(participants=request.user)
+                .exclude(deleted_by=request.user)
+                .values_list("participants__id", flat=True)
             )
             queryset = get_user_model().objects.exclude(
-                id__in=existing_partner_ids | {request.user.id}
+                id__in=active_partner_ids | {request.user.id}
             )
-            users = [
-                {**_participant_payload(user, include_email=False, viewer=request.user), "id": user.id}
-                for user in queryset.order_by("username")[:10]
-            ]
-            return JsonResponse({"users": users})
+        else:
+            q = request.GET.get("q", "").strip()[:MAX_SEARCH_QUERY]
+            queryset = get_user_model().objects.exclude(id=request.user.id)
+            if q:
+                queryset = queryset.filter(
+                    Q(username__icontains=q)
+                    | Q(display_name__icontains=q)
+                    | Q(email__icontains=q)
+                )
 
-        q = request.GET.get("q", "").strip()[:MAX_SEARCH_QUERY]
-        queryset = get_user_model().objects.exclude(id=request.user.id)
-        if q:
-            queryset = queryset.filter(
-                Q(username__icontains=q) | Q(display_name__icontains=q) | Q(email__icontains=q)
-            )
+        # Email is intentionally excluded from search results. Profile info and
+        # online status honour each result user's own privacy settings relative
+        # to the searcher.
         users = [
-            # Email is intentionally excluded from search results. Profile info
-            # and online status honour each result user's own privacy settings
-            # relative to the searcher.
             {**_participant_payload(user, include_email=False, viewer=request.user), "id": user.id}
             for user in queryset.order_by("username")[:10]
         ]
@@ -679,38 +674,16 @@ class SearchConversationsView(LoginRequiredMixin, View):
         q = request.GET.get("q", "").strip()[:MAX_SEARCH_QUERY]
         if not q:
             return JsonResponse({"conversations": []})
-        conversations = (
+        conversations = _with_conversation_data(
             Conversation.objects.filter(participants=request.user)
             .filter(
                 Q(participants__username__icontains=q)
                 | Q(participants__display_name__icontains=q)
                 | Q(messages__content__icontains=q)
             )
-            .distinct()
-            .prefetch_related(
-                "participants",
-                Prefetch(
-                    "messages",
-                    queryset=_recent_messages_queryset(DASHBOARD_MESSAGE_LIMIT),
-                ),
-            )
-            .annotate(
-                total_count=Count("messages", filter=_visible_messages_filter(request.user)),
-                unread_count=Count(
-                    "messages",
-                    filter=Q(messages__is_read=False)
-                    & ~Q(messages__sender=request.user)
-                    & Q(messages__blocked_delivery=False),
-                ),
-                media_count=Count(
-                    "messages",
-                    filter=Q(messages__image__gt="")
-                    & _visible_messages_filter(request.user),
-                ),
-                is_muted=_muted_exists(request.user),
-            )
-            .order_by("-updated_at")[:20]
-        )
+            .distinct(),
+            request.user,
+        ).order_by("-updated_at")[:20]
         blocked_ids = _blocked_user_ids(request.user)
         deleted_ids = _deleted_conversation_ids(request.user)
         return JsonResponse(

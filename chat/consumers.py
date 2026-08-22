@@ -365,11 +365,5 @@ class ChatConsumer(AsyncWebsocketConsumer):
             sender=user,
             content=content,
         )
-        # A new message brings a soft-deleted conversation back for everyone.
-        conversation.deleted_by.clear()
-        # Mirror the HTTP send path: bump updated_at so the conversation sorts
-        # to the top of the sidebar after a refresh.
-        Conversation.objects.filter(pk=conversation.pk).update(
-            updated_at=message.created_at
-        )
+        conversation.register_new_message(message)
         return message

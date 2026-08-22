@@ -3,7 +3,6 @@ Django settings for the SyncChat project.
 """
 
 import os
-import secrets
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
@@ -162,11 +161,17 @@ SILENCED_SYSTEM_CHECKS = [
     "django_ratelimit.W001",
 ]
 
-# Database
+# Database: PostgreSQL is the only supported backend. Credentials come from
+# the environment (.env); without them the connection fails loudly rather
+# than silently falling back to another engine.
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME", "syncchat_db"),
+        "USER": os.getenv("DB_USER", "syncchat_user"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
@@ -197,12 +202,12 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Security: HTTPS and cookie settings
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 SECURE_HSTS_SECONDS = 31536000  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
-SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", not DEBUG)
+SECURE_SSL_REDIRECT = not DEBUG
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Auth

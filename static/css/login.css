@@ -10,3 +10,49 @@
   body { align-items: flex-start; }
   .card { margin: 8px 0; }
 }
+
+/* --- Remember-me checkbox ---
+   The tick <svg> in .check carries only a viewBox, so with no explicit size it
+   renders at the browser default and dominates the card. Size it to the form
+   scale; the native input is visually hidden and .check is the visible box. */
+.row { margin-bottom: var(--space-6); }
+
+.remember {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.remember input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.check {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--input-bg);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.check svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.remember input:checked + .check { background: var(--accent); border-color: var(--accent); }
+.remember input:checked + .check svg { opacity: 1; }
+.remember input:focus-visible + .check { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }

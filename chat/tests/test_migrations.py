@@ -4,9 +4,12 @@ from django.test import TransactionTestCase
 
 
 class ClearOrphanedBlockedDeliveryTests(TransactionTestCase):
-    # MigrationExecutor needs to run real schema operations, which SQLite cannot
-    # do inside a transaction, so this uses TransactionTestCase.
-    """Data migration 0011: reveal blocked_delivery flags whose block is gone."""
+    """Data migration 0011: reveal blocked_delivery flags whose block is gone.
+
+    Uses TransactionTestCase, not TestCase: MigrationExecutor runs real
+    migration operations that manage their own transactions, which can't run
+    inside the single atomic block TestCase wraps each test in.
+    """
 
     def _migrate(self, targets):
         executor = MigrationExecutor(connection)

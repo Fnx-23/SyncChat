@@ -44,6 +44,17 @@ class Conversation(models.Model):
         names = ", ".join(p.username for p in self.participants.all()[:3])
         return f"Conversation ({names})"
 
+    def register_new_message(self, message):
+        """Update conversation state after ``message`` was created: bring it
+        back for anyone who had soft-deleted it, and set ``updated_at`` to the
+        message time so it sorts to the top of every participant's sidebar.
+
+        A queryset ``update`` (rather than ``save``) sets ``updated_at``
+        explicitly, bypassing its ``auto_now`` and touching only that column.
+        """
+        self.deleted_by.clear()
+        Conversation.objects.filter(pk=self.pk).update(updated_at=message.created_at)
+
 
 class Block(models.Model):
     """A user blocking another user. Blocking is symmetric in effect: once a

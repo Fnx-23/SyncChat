@@ -15,12 +15,8 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += [
-        path('static/<path:path>', serve, {
-            'document_root': settings.STATIC_ROOT,
-        }),
-        path('media/<path:path>', serve, {
-            'document_root': settings.MEDIA_ROOT,
-        }),
+        path("static/<path:path>", serve, {"document_root": settings.STATIC_ROOT}),
+        path("media/<path:path>", serve, {"document_root": settings.MEDIA_ROOT}),
     ]
 
 handler404 = error_404

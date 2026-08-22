@@ -7,7 +7,7 @@ ALLOWED_IMAGE_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp", "image/g
 ALLOWED_IMAGE_FORMATS = {"JPEG", "PNG", "WEBP", "GIF"}
 
 
-def _validate_image(upload, max_size=None):
+def validate_image(upload, max_size=None):
     """Return an error string if the uploaded file is not a usable image."""
     if max_size is None:
         max_size = MAX_IMAGE_SIZE
@@ -34,6 +34,6 @@ def _validate_image(upload, max_size=None):
     return None
 
 
-def _validate_avatar(upload):
+def validate_avatar(upload):
     """Avatar uploads use a smaller size cap than chat images."""
-    return _validate_image(upload, max_size=MAX_AVATAR_SIZE)
+    return validate_image(upload, max_size=MAX_AVATAR_SIZE)

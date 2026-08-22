@@ -5,6 +5,7 @@ __pycache__/
 .eggs/
 build/
 dist/
+.ruff_cache/
 
 # Virtual environments
 .venv/
@@ -17,23 +18,36 @@ ENV/
 db.sqlite3
 db.sqlite3-journal
 /staticfiles/
+# Runtime uploads are never tracked; only placeholder .gitkeep files are.
 /media/*
 !/media/.gitkeep
 !/media/profile_pictures/
+/media/profile_pictures/*
 !/media/profile_pictures/.gitkeep
 !/media/chat_images/
+/media/chat_images/*
 !/media/chat_images/.gitkeep
+!/media/avatars/
+/media/avatars/*
+!/media/avatars/.gitkeep
 
 # Environment
 .env
 .env.local
 
-# IDE / editors
+# IDE / editors / agent tools
 .idea/
 .vscode/
+.claude/
 *.swp
 *.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Temp / backup files
+*.bak
+*.tmp
+*.orig

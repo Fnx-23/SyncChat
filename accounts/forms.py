@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.password_validation import validate_password
 
-from core.images import _validate_avatar
+from core.images import validate_avatar
 
 User = get_user_model()
 
@@ -82,7 +82,7 @@ class UserProfileForm(forms.ModelForm):
         avatar = self.cleaned_data.get("avatar")
         if not avatar:
             return avatar
-        error = _validate_avatar(avatar)
+        error = validate_avatar(avatar)
         if error:
             raise forms.ValidationError(error)
         return avatar

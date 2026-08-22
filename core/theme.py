@@ -41,22 +41,24 @@ def _prefers_dark(request):
 
 
 def resolve_theme(user):
-    """Return ``(pref, resolved)`` for a user (or anonymous) without a request.
+    """Return the saved theme preference for a user, without a request.
 
-    For anonymous users there is no DB preference, so ``pref`` is empty and
-    the inline script relies on localStorage / OS preference instead.
+    One of 'light' | 'dark' | 'system', or '' for anonymous users (no DB
+    preference), in which case the inline script relies on localStorage / OS
+    preference instead. 'system' can only be resolved to a concrete value when
+    a request is available (see ``request_theme``).
     """
     pref = ""
     if user is not None and getattr(user, "is_authenticated", False):
         pref = getattr(user, "theme", "") or THEME_SYSTEM
         if pref not in VALID_THEMES:
             pref = THEME_SYSTEM
-    return pref, ""  # no request -> can't resolve 'system' server-side
+    return pref
 
 
 def request_theme(request):
     """Return ``(pref, resolved)`` for a request, resolving 'system' if possible."""
-    pref, _ = resolve_theme(getattr(request, "user", None))
+    pref = resolve_theme(getattr(request, "user", None))
     if pref == THEME_SYSTEM:
         resolved = THEME_DARK if _prefers_dark(request) else THEME_LIGHT
     else:

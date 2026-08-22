@@ -498,16 +498,6 @@
       bioSection.hidden = true;
     }
 
-    // Phone section
-    const phoneSection = document.getElementById("phone-section");
-    const phoneValue = document.getElementById("profile-phone");
-    if (u.phone && u.phone.trim()) {
-      phoneValue.textContent = u.phone;
-      phoneSection.hidden = false;
-    } else {
-      phoneSection.hidden = true;
-    }
-
     // Email section
     const emailSection = document.getElementById("email-section");
     const emailValue = document.getElementById("profile-email");
@@ -748,11 +738,6 @@
       userAvatar.innerHTML = initials(p.name || me);
       userAvatar.style.cssText = avatarStyle((p.id || 0) - 1);
     }
-  }
-
-  function initUserAvatar() {
-    if (!me && !meProfile) return;
-    renderOwnAvatar();
   }
 
   userMenuBtn.addEventListener("click", toggleUserMenu);
@@ -1837,6 +1822,6 @@
   applyResponsive();
   renderNotifState();
   updateUnread();
-  initUserAvatar();
+  renderOwnAvatar();
   if (users.length) select(users[0].id);
 })();
