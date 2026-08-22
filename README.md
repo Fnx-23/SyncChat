@@ -48,9 +48,6 @@ SyncChat is a production-grade, real-time messaging platform that delivers insta
 
 ## UI Showcase
 
-<table>
-<tr><td width="50%" valign="top">
-
 ### Authentication & Onboarding
 
 | Screenshot | Description |
@@ -67,8 +64,6 @@ SyncChat is a production-grade, real-time messaging platform that delivers insta
 | ![Chat search](Screenshots/Chat_search.png) | **Conversation Search** — Instant client-side filtering of the sidebar conversation list. |
 | ![User menu](Screenshots/user_menu.png) | **User Menu** — The avatar-triggered dropdown exposing profile settings, theme toggle, and logout. |
 
-</td><td width="50%" valign="top">
-
 ### Starting Conversations & Settings
 
 | Screenshot | Description |
@@ -80,9 +75,6 @@ SyncChat is a production-grade, real-time messaging platform that delivers insta
 | ![Privacy settings](Screenshots/Privacy_settings.png) | **Privacy Settings** — Controls for online-status visibility, read receipts, and profile visibility scope. |
 | ![Notifications](Screenshots/Notifications_settings.png) | **Notification Settings** — Preferences governing desktop alerts and unread behavior. |
 
-</td></tr>
-<tr><td colspan="2">
-
 ### Blocking & Privacy Flows
 
 | Screenshot | Description |
@@ -91,9 +83,6 @@ SyncChat is a production-grade, real-time messaging platform that delivers insta
 | ![Block user](Screenshots/Block_user.png) | **Block Confirmation** — The explicit modal shown before a block takes effect on both directions. |
 | ![Get blocked](Screenshots/Get_blocked.png) | **Blocked Experience** — What a blocked sender sees: a silently frozen conversation with no indication of the block. |
 | ![Delete account](Screenshots/Delete_Account.png) | **Account Deletion** — Destructive-action confirmation requiring password re-authentication. |
-
-</td></tr>
-</table>
 
 ## Tech Stack
 
